@@ -4,7 +4,6 @@ import "./openzeppelin/contracts/token/ERC20/ERC20.sol";
 import "./openzeppelin/contracts/ownership/Ownable.sol";
 import "./BioToken.sol";
 import "./Finance.sol";
-import "./Bios.sol";
 
 
 /**
@@ -13,12 +12,12 @@ import "./Bios.sol";
 contract BioMinter is Ownable {
 
     BioToken internal bioToken;
-    Bios internal bios;
     ERC20 internal dai;
     Finance internal finance;
 
     uint256 constant public PRICE = 10**18;
     uint256 constant public UNIT = 10**18;
+    address constant public NODE = '';
 
     string private constant INSUFFICIENT_PAYMENT = "INSUFFICIENT_PAYMENT";
     string private constant RECIVED_BIO_BEFORE = "RECIVED_BIO_BEFORE";
@@ -26,14 +25,15 @@ contract BioMinter is Ownable {
     string private constant BAD_SIGNATURE = "BAD_SIGNATURE";
     string private constant USER_NA = "USER_N/A";
 
+    mapping(address => bool) public recivedBio;
+
     event Buy(address buyer, uint256 price);
 
-    constructor(address bioTokenAddress, address daiAddress, address biosAddress, address financeAddress)
+    constructor(address bioTokenAddress, address daiAddress, address financeAddress)
         public
     {
         bioToken = BioToken(bioTokenAddress);
         finance = Finance(financeAddress);
-        bios = Bios(biosAddress);
         dai = ERC20(daiAddress);
     }
 
@@ -70,21 +70,20 @@ contract BioMinter is Ownable {
         uint8 v)
     	external
     {
-        // require(brightID.isUser(msg.sender), USER_NA);
-        require(!bios.isReceivedBIO(msg.sender), RECIVED_BIO_BEFORE);
+        require(!recivedBio[msg.sender], RECIVED_BIO_BEFORE);
 
         uint256 allowance = dai.allowance(msg.sender, address(this));
         require(allowance <= PRICE, INSUFFICIENT_PAYMENT);
 
         address signerAddress = signer(r, s, v, msg.sender, timestamp);
         require(signerAddress != address(0), BAD_SIGNATURE);
-        require(bios.isNode(signerAddress), INCOMPATIBLE_NODE);
+        require(signerAddress == NODE, INCOMPATIBLE_NODE);
 
         if (dai.transferFrom(msg.sender, address(this), PRICE)) {
             require(dai.approve(address(finance), PRICE));
             finance.deposit(address(dai), PRICE, "Sell BIO Revenue");
             emit Buy(msg.sender, PRICE);
-	        require(bios.setReceivedBio(msg.sender));
+	        recivedBio[msg.sender] = true;
 	        require(bioToken.mint(msg.sender, UNIT));
         }
     }
