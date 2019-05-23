@@ -12,7 +12,7 @@ import "./Finance.sol";
 contract BioMinter is Ownable {
 
     BioToken internal bioToken;
-    ERC20 internal dai;
+    ERC20 internal paymentToken;
     Finance internal finance;
 
     uint256 constant public PRICE = 10**18;
@@ -29,12 +29,12 @@ contract BioMinter is Ownable {
 
     event Buy(address buyer, uint256 price);
 
-    constructor(address bioTokenAddress, address daiAddress, address financeAddress)
+    constructor(address bioTokenAddress, address paymentTokenAddr, address financeAddress)
         public
     {
         bioToken = BioToken(bioTokenAddress);
         finance = Finance(financeAddress);
-        dai = ERC20(daiAddress);
+        paymentToken = ERC20(paymentTokenAddr);
     }
 
     /**
@@ -72,16 +72,16 @@ contract BioMinter is Ownable {
     {
         require(!recivedBio[msg.sender], RECIVED_BIO_BEFORE);
 
-        uint256 allowance = dai.allowance(msg.sender, address(this));
+        uint256 allowance = paymentToken.allowance(msg.sender, address(this));
         require(allowance <= PRICE, INSUFFICIENT_PAYMENT);
 
         address signerAddress = signer(r, s, v, msg.sender, timestamp);
         require(signerAddress != address(0), BAD_SIGNATURE);
         require(signerAddress == NODE, INCOMPATIBLE_NODE);
 
-        if (dai.transferFrom(msg.sender, address(this), PRICE)) {
-            require(dai.approve(address(finance), PRICE));
-            finance.deposit(address(dai), PRICE, "Sell BIO Revenue");
+        if (paymentToken.transferFrom(msg.sender, address(this), PRICE)) {
+            require(paymentToken.approve(address(finance), PRICE));
+            finance.deposit(address(paymentToken), PRICE, "Sell BIO Revenue");
             emit Buy(msg.sender, PRICE);
 	        recivedBio[msg.sender] = true;
 	        require(bioToken.mint(msg.sender, UNIT));
