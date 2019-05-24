@@ -4,6 +4,7 @@ import "./openzeppelin/contracts/token/ERC20/ERC20.sol";
 import "./openzeppelin/contracts/ownership/Ownable.sol";
 import "./BioToken.sol";
 import "./Finance.sol";
+import "./NonFungibleBIO.sol";
 
 
 /**
@@ -14,6 +15,7 @@ contract BioMinter is Ownable {
     BioToken internal bioToken;
     ERC20 internal paymentToken;
     Finance internal finance;
+    NonFungibleBIO internal nonFungibleBioToken;
 
     uint256 constant public PRICE = 10**18;
     uint256 constant public UNIT = 10**18;
@@ -31,12 +33,13 @@ contract BioMinter is Ownable {
 
     event Buy(address buyer, uint256 price);
 
-    constructor(address bioTokenAddress, address paymentTokenAddr, address financeAddress)
+    constructor(address bioTokenAddress, address nonFungibleBioAdrr, address paymentTokenAddr, address financeAddress)
         public
     {
         bioToken = BioToken(bioTokenAddress);
         finance = Finance(financeAddress);
         paymentToken = ERC20(paymentTokenAddr);
+        nonFungibleBioToken = NonFungibleBIO(nonFungibleBioAdrr);
     }
 
     /**
@@ -48,6 +51,17 @@ contract BioMinter is Ownable {
         onlyOwner
     {
         bioToken.transferOwnership(newOwner);
+    }
+
+    /**
+     * @dev Allows the current owner to transfer control of the contract to a newOwner.
+     * @param newOwner The address to transfer ownership to.
+     */
+    function transferNonFungibleOwnership(address newOwner)
+        external
+        onlyOwner
+    {
+        nonFungibleBioToken.transferOwnership(newOwner);
     }
 
     /**
@@ -87,6 +101,7 @@ contract BioMinter is Ownable {
             emit Buy(msg.sender, PRICE);
             recivedBio[msg.sender] = true;
             require(bioToken.mint(msg.sender, UNIT), MINT_ERROR);
+            require(nonFungibleBioToken.mint(msg.sender), MINT_ERROR);
         }
     }
 
