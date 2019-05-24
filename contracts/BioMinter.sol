@@ -17,12 +17,14 @@ contract BioMinter is Ownable {
 
     uint256 constant public PRICE = 10**18;
     uint256 constant public UNIT = 10**18;
-    address constant public NODE = '';
+    address constant public NODE = "";
 
     string private constant INSUFFICIENT_PAYMENT = "INSUFFICIENT_PAYMENT";
     string private constant RECIVED_BIO_BEFORE = "RECIVED_BIO_BEFORE";
     string private constant INCOMPATIBLE_NODE = "INCOMPATIBLE_NODE";
     string private constant BAD_SIGNATURE = "BAD_SIGNATURE";
+    string private constant APPROVE_ERROR = "APPROVE_ERROR";
+    string private constant MINT_ERROR = "MINT_ERROR";
     string private constant USER_NA = "USER_N/A";
 
     mapping(address => bool) public recivedBio;
@@ -42,8 +44,8 @@ contract BioMinter is Ownable {
      * @param newOwner The address to transfer ownership to.
      */
     function transferTokenOwnership(address newOwner)
-    	external
-    	onlyOwner
+        external
+        onlyOwner
     {
         bioToken.transferOwnership(newOwner);
     }
@@ -68,7 +70,7 @@ contract BioMinter is Ownable {
         bytes32 r,
         bytes32 s,
         uint8 v)
-    	external
+        external
     {
         require(!recivedBio[msg.sender], RECIVED_BIO_BEFORE);
 
@@ -80,11 +82,11 @@ contract BioMinter is Ownable {
         require(signerAddress == NODE, INCOMPATIBLE_NODE);
 
         if (paymentToken.transferFrom(msg.sender, address(this), PRICE)) {
-            require(paymentToken.approve(address(finance), PRICE));
+            require(paymentToken.approve(address(finance), PRICE), APPROVE_ERROR);
             finance.deposit(address(paymentToken), PRICE, "Sell BIO Revenue");
             emit Buy(msg.sender, PRICE);
-	        recivedBio[msg.sender] = true;
-	        require(bioToken.mint(msg.sender, UNIT));
+            recivedBio[msg.sender] = true;
+            require(bioToken.mint(msg.sender, UNIT), MINT_ERROR);
         }
     }
 
