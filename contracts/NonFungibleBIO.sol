@@ -55,13 +55,15 @@ contract NonFungibleBIO is ERC721Token, Ownable {
     function mint(address userAddress)
         public
         onlyOwner
+        returns(bool ret)
     {
         uint256 timestamp = now;
         string memory timestampString = timestamp2string(timestamp);
-        TokenDetail memory _detail = TokenDetail({user: userAddress, timestmap: timestamp});
-        uint256 tokenId = tokenDetails.push(_detail) - 1;
+        TokenDetail memory detail = TokenDetail({user: userAddress, timestmap: timestamp});
+        uint256 tokenId = tokenDetails.push(detail) - 1;
         super._mint(userAddress, tokenId);
         super._setTokenURI(tokenId, timestampString);
+        return true;
     }
 
     /**
@@ -73,8 +75,8 @@ contract NonFungibleBIO is ERC721Token, Ownable {
         view
         returns(address user, uint256 timestmap)
     {
-        TokenDetail memory _detail = tokenDetails[tokenId];
-        user = _detail.user;
-        timestmap = _detail.timestmap;
+        TokenDetail memory detail = tokenDetails[tokenId];
+        user = detail.user;
+        timestmap = detail.timestmap;
     }
 }
