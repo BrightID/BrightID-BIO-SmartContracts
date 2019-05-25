@@ -24,7 +24,7 @@ contract NonFungibleBIO is ERC721Token, Ownable {
      * @dev Convert timestamp to string.
      * @param timestamp The timestamp.
      */
-    function timestamp2string(uint timestamp)
+    function timestamp2string(uint256 timestamp)
         internal
         pure
         returns (string memory timestampString)
@@ -33,14 +33,14 @@ contract NonFungibleBIO is ERC721Token, Ownable {
         if (tmpTimestamp == 0) {
             return "0";
         }
-        uint i = tmpTimestamp;
-        uint len;
+        uint256 i = tmpTimestamp;
+        uint256 len;
         while (i != 0) {
             len++;
             i /= 10;
         }
         bytes memory bytesString = new bytes(len);
-        uint k = len - 1;
+        uint256 k = len - 1;
         while (tmpTimestamp != 0) {
             bytesString[k--] = byte(uint8(48 + tmpTimestamp % 10));
             tmpTimestamp /= 10;
@@ -69,7 +69,7 @@ contract NonFungibleBIO is ERC721Token, Ownable {
      * @dev Get the token details.
      * @param tokenId The token's id.
      */
-    function getTokenDetail(uint tokenId)
+    function getTokenDetail(uint256 tokenId)
         external
         view
         returns(address user, uint256 timestmap)
