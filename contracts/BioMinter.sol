@@ -20,7 +20,7 @@ contract BioMinter is Ownable {
     uint256 constant public PRICE = 10**18;
     uint256 constant public UNIT = 10**18;
     address constant public NODE = "";
-    address constant public TOKEN_SYMBOL = "BIO";
+    string constant public TOKEN_SYMBOL = "BIO";
 
     string private constant INSUFFICIENT_PAYMENT = "INSUFFICIENT_PAYMENT";
     string private constant RECIVED_BIO_BEFORE = "RECIVED_BIO_BEFORE";
