@@ -56,11 +56,10 @@ contract NonFungibleBIO is ERC721Token, Ownable {
         public
         onlyOwner
     {
-        uint256 timestamp = uint256(now);
-        string timestampString = timestamp2string(timestamp);
-        TokenDetail memory _detail = TokenDetail({user: userAddress, timestmap: timestamp });
+        uint256 timestamp = now;
+        string memory timestampString = timestamp2string(timestamp);
+        TokenDetail memory _detail = TokenDetail({user: userAddress, timestmap: timestamp});
         uint256 tokenId = tokenDetails.push(_detail) - 1;
-
         super._mint(userAddress, tokenId);
         super._setTokenURI(tokenId, timestampString);
     }
