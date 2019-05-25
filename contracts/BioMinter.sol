@@ -20,6 +20,7 @@ contract BioMinter is Ownable {
     uint256 constant public PRICE = 10**18;
     uint256 constant public UNIT = 10**18;
     address constant public NODE = "";
+    address constant public TOKEN_SYMBOL = "BIO";
 
     string private constant INSUFFICIENT_PAYMENT = "INSUFFICIENT_PAYMENT";
     string private constant RECIVED_BIO_BEFORE = "RECIVED_BIO_BEFORE";
@@ -74,13 +75,11 @@ contract BioMinter is Ownable {
 
     /**
      * @notice Buy BIO token.
-     * @param timestamp The score's timestamp.
      * @param r signature's r.
      * @param s signature's s.
      * @param v signature's v.
      */
     function buy(
-        uint64 timestamp,
         bytes32 r,
         bytes32 s,
         uint8 v)
@@ -91,7 +90,7 @@ contract BioMinter is Ownable {
         uint256 allowance = paymentToken.allowance(msg.sender, address(this));
         require(allowance <= PRICE, INSUFFICIENT_PAYMENT);
 
-        address signerAddress = signer(r, s, v, msg.sender, timestamp);
+        address signerAddress = signer(r, s, v, msg.sender);
         require(signerAddress != address(0), BAD_SIGNATURE);
         require(signerAddress == NODE, INCOMPATIBLE_NODE);
 
@@ -111,19 +110,17 @@ contract BioMinter is Ownable {
      * @param s signature's s.
      * @param v signature's v.
      * @param userAddress The user address.
-     * @param timestamp The score's timestamp.
      */
     function signer(
         bytes32 r,
         bytes32 s,
         uint8 v,
-        address userAddress,
-        uint64 timestamp)
+        address userAddress)
         internal
         pure
         returns(address addr)
     {
-        bytes32 message = keccak256(abi.encode(userAddress, timestamp));
+        bytes32 message = keccak256(abi.encode(userAddress, TOKEN_SYMBOL));
         return ecrecover(message, v, r, s);
     }
 }
