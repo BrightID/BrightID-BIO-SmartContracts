@@ -4,15 +4,10 @@ import "./openzeppelin/contracts/token/ERC721/ERC721Full.sol";
 import "./openzeppelin/contracts/ownership/Ownable.sol";
 
 contract NonFungibleBIO is ERC721Full, Ownable {
+    uint256 public tokenId = 0;
+
     string public constant NAME = "NonFungibleBIO";
     string public constant SYMBOL = "NFBIO";
-
-    struct TokenDetail {
-        address user;
-        uint256 timestmap;
-    }
-
-    TokenDetail[] public tokenDetails;
 
     constructor ()
         public
@@ -59,24 +54,9 @@ contract NonFungibleBIO is ERC721Full, Ownable {
     {
         uint256 timestamp = now;
         string memory timestampString = timestamp2string(timestamp);
-        TokenDetail memory detail = TokenDetail({user: userAddress, timestmap: timestamp});
-        uint256 tokenId = tokenDetails.push(detail) - 1;
         super._mint(userAddress, tokenId);
         super._setTokenURI(tokenId, timestampString);
+        ++tokenId;
         return true;
-    }
-
-    /**
-     * @dev Get the token details.
-     * @param tokenId The token's id.
-     */
-    function getTokenDetail(uint256 tokenId)
-        external
-        view
-        returns(address user, uint256 timestmap)
-    {
-        TokenDetail memory detail = tokenDetails[tokenId];
-        user = detail.user;
-        timestmap = detail.timestmap;
     }
 }
