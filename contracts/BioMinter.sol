@@ -12,6 +12,8 @@ import "./NonFungibleBIO.sol";
  */
 contract BioMinter is Ownable {
 
+    uint256 public tokenId = 0;
+
     BioToken internal bioToken;
     ERC20 internal paymentToken;
     Finance internal finance;
@@ -41,28 +43,6 @@ contract BioMinter is Ownable {
         finance = Finance(financeAddress);
         paymentToken = ERC20(paymentTokenAddr);
         nonFungibleBioToken = NonFungibleBIO(nonFungibleBioAdrr);
-    }
-
-    /**
-     * @dev Allows the current owner to transfer control of the contract to a newOwner.
-     * @param newOwner The address to transfer ownership to.
-     */
-    function transferTokenOwnership(address newOwner)
-        external
-        onlyOwner
-    {
-        bioToken.transferOwnership(newOwner);
-    }
-
-    /**
-     * @dev Allows the current owner to transfer control of the contract to a newOwner.
-     * @param newOwner The address to transfer ownership to.
-     */
-    function transferNonFungibleOwnership(address newOwner)
-        external
-        onlyOwner
-    {
-        nonFungibleBioToken.transferOwnership(newOwner);
     }
 
     /**
@@ -100,7 +80,8 @@ contract BioMinter is Ownable {
             emit Buy(msg.sender, PRICE);
             recivedBio[msg.sender] = true;
             require(bioToken.mint(msg.sender, UNIT), MINT_ERROR);
-            require(nonFungibleBioToken.mint(msg.sender), MINT_ERROR);
+            require(nonFungibleBioToken.mint(msg.sender, tokenId), MINT_ERROR);
+            ++tokenId;
         }
     }
 
