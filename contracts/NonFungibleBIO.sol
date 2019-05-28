@@ -1,9 +1,9 @@
-pragma solidity ^0.4.23;
+pragma solidity ^0.5.0;
 
-import "./openzeppelin/contracts/token/ERC721/ERC721Token.sol";
+import "./openzeppelin/contracts/token/ERC721/ERC721Full.sol";
 import "./openzeppelin/contracts/ownership/Ownable.sol";
 
-contract NonFungibleBIO is ERC721Token, Ownable {
+contract NonFungibleBIO is ERC721Full, Ownable {
     string public constant NAME = "NonFungibleBIO";
     string public constant SYMBOL = "NFBIO";
 
@@ -16,7 +16,7 @@ contract NonFungibleBIO is ERC721Token, Ownable {
 
     constructor ()
         public
-        ERC721Token(NAME, SYMBOL)
+        ERC721Full(NAME, SYMBOL)
     {
     }
 
