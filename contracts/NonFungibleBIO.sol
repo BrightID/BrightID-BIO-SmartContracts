@@ -13,6 +13,7 @@ contract NonFungibleBIO is ERC721Full, Ownable {
         public
         ERC721Full(NAME, SYMBOL)
     {
+        // no-empty-blocks
     }
 
     /**
@@ -24,8 +25,6 @@ contract NonFungibleBIO is ERC721Full, Ownable {
         onlyOwner
         returns(bool ret)
     {
-        uint256 timestamp = now;
-        string memory timestampString = timestamp2string(timestamp);
         super._mint(userAddress, tokenId);
         ++tokenId;
         return true;
