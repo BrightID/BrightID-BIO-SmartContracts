@@ -1,6 +1,6 @@
 var BioToken = artifacts.require('BioToken.sol');
 var BioMinter = artifacts.require('BioMinter.sol');
-var NFbioToken = artifacts.require('NFbioToken.sol');
+var NFbioToken = artifacts.require('NonFungibleBIO.sol');
 var financeAddr = '';
 var paymentTokenAddr = '';
 
