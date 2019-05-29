@@ -2,9 +2,9 @@ pragma solidity ^0.5.0;
 
 import "./openzeppelin/contracts/token/ERC20/ERC20.sol";
 import "./openzeppelin/contracts/ownership/Ownable.sol";
+import "./NonFungibleBIO.sol";
 import "./BioToken.sol";
 import "./Finance.sol";
-import "./NonFungibleBIO.sol";
 
 
 /**
@@ -17,7 +17,7 @@ contract BioMinter is Ownable {
     BioToken internal bioToken;
     ERC20 internal paymentToken;
     Finance internal finance;
-    NonFungibleBIO internal nonFungibleBioToken;
+    NonFungibleBIO internal NFbioToken;
 
     uint256 constant public PRICE = 10**18;
     uint256 constant public UNIT = 10**18;
@@ -42,7 +42,7 @@ contract BioMinter is Ownable {
         bioToken = BioToken(bioTokenAddress);
         finance = Finance(financeAddress);
         paymentToken = ERC20(paymentTokenAddr);
-        nonFungibleBioToken = NonFungibleBIO(nonFungibleBioAdrr);
+        NFbioToken = NonFungibleBIO(nonFungibleBioAdrr);
     }
 
     /**
@@ -80,7 +80,7 @@ contract BioMinter is Ownable {
             emit Buy(msg.sender, PRICE);
             recivedBio[msg.sender] = true;
             require(bioToken.mint(msg.sender, UNIT), MINT_ERROR);
-            require(nonFungibleBioToken.mint(msg.sender, tokenId), MINT_ERROR);
+            require(NFbioToken.mint(msg.sender, tokenId), MINT_ERROR);
             ++tokenId;
         }
     }
