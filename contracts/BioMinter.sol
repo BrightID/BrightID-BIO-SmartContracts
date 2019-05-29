@@ -21,7 +21,7 @@ contract BioMinter is Ownable {
 
     uint256 constant public PRICE = 10**18;
     uint256 constant public UNIT = 10**18;
-    address constant public NODE = 0x0;
+    address constant public NODE = 0x085Ae95B261fF13f826159db99e073DFFD1424Ef;
     string constant public TOKEN_SYMBOL = "BIO";
 
     string private constant INSUFFICIENT_PAYMENT = "INSUFFICIENT_PAYMENT";
@@ -36,13 +36,13 @@ contract BioMinter is Ownable {
 
     event Buy(address buyer, uint256 price);
 
-    constructor(address bioTokenAddress, address nonFungibleBioAdrr, address paymentTokenAddr, address financeAddress)
+    constructor(address bioTokenAddress, address nfBioTokenAddr, address paymentTokenAddr, address financeAddress)
         public
     {
         bioToken = BioToken(bioTokenAddress);
         finance = Finance(financeAddress);
         paymentToken = ERC20(paymentTokenAddr);
-        NFbioToken = NonFungibleBIO(nonFungibleBioAdrr);
+        NFbioToken = NonFungibleBIO(nfBioTokenAddr);
     }
 
     /**
