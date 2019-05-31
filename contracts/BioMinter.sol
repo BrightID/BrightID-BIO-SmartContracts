@@ -11,9 +11,6 @@ import "./Finance.sol";
  * @title BIO token minter contract.
  */
 contract BioMinter is Ownable {
-
-    uint256 public tokenId = 0;
-
     BioToken internal bioToken;
     ERC20 internal paymentToken;
     Finance internal finance;
@@ -22,7 +19,6 @@ contract BioMinter is Ownable {
     uint256 constant public PRICE = 10**18;
     uint256 constant public UNIT = 10**18;
     address constant public NODE = 0x0;
-    string constant public TOKEN_SYMBOL = "BIO";
 
     string private constant INSUFFICIENT_PAYMENT = "INSUFFICIENT_PAYMENT";
     string private constant RECIVED_BIO_BEFORE = "RECIVED_BIO_BEFORE";
@@ -80,8 +76,8 @@ contract BioMinter is Ownable {
             emit Buy(msg.sender, PRICE);
             recivedBio[msg.sender] = true;
             require(bioToken.mint(msg.sender, UNIT), MINT_ERROR);
-            require(NFbioToken.mint(msg.sender, tokenId), MINT_ERROR);
-            ++tokenId;
+            uint256 lastTokenid = NFbioToken.totalSupply();
+            require(NFbioToken.mint(msg.sender, lastTokenid + 1), MINT_ERROR);
         }
     }
 
@@ -98,10 +94,10 @@ contract BioMinter is Ownable {
         uint8 v,
         address userAddress)
         internal
-        pure
+        view
         returns(address addr)
     {
-        bytes32 message = keccak256(abi.encode(userAddress, TOKEN_SYMBOL));
+        bytes32 message = keccak256(abi.encode(userAddress, address(this)));
         return ecrecover(message, v, r, s);
     }
 }
