@@ -71,12 +71,12 @@ contract BioMinter is Ownable {
         require(signerAddress == NODE, INCOMPATIBLE_NODE);
 
         if (paymentToken.transferFrom(msg.sender, address(this), PRICE)) {
+            recivedBio[msg.sender] = true;
             require(paymentToken.approve(address(finance), PRICE), APPROVE_ERROR);
             finance.deposit(address(paymentToken), PRICE, "Sell BIO Revenue");
             emit Buy(msg.sender, PRICE);
-            recivedBio[msg.sender] = true;
-            require(bioToken.mint(msg.sender, UNIT), MINT_ERROR);
             uint256 lastTokenid = NFbioToken.totalSupply();
+            require(bioToken.mint(msg.sender, UNIT), MINT_ERROR);
             require(NFbioToken.mint(msg.sender, lastTokenid + 1), MINT_ERROR);
         }
     }
@@ -97,7 +97,7 @@ contract BioMinter is Ownable {
         view
         returns(address addr)
     {
-        bytes32 message = keccak256(abi.encode(userAddress, address(this)));
+        bytes32 message = keccak256(abi.encode(userAddress, address(bioToken)));
         return ecrecover(message, v, r, s);
     }
 }
