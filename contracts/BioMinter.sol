@@ -26,7 +26,7 @@ contract BioMinter is Ownable {
     string private constant BAD_SIGNATURE = "BAD_SIGNATURE";
     string private constant APPROVE_ERROR = "APPROVE_ERROR";
     string private constant MINT_ERROR = "MINT_ERROR";
-    string private constant USER_NA = "USER_N/A";
+    string private constant FINANCE_MESSAGE = "BIO Token Revenue";
 
     mapping(address => bool) public recivedBio;
 
@@ -73,7 +73,7 @@ contract BioMinter is Ownable {
         if (paymentToken.transferFrom(msg.sender, address(this), PRICE)) {
             recivedBio[msg.sender] = true;
             require(paymentToken.approve(address(finance), PRICE), APPROVE_ERROR);
-            finance.deposit(address(paymentToken), PRICE, "Sell BIO Revenue");
+            finance.deposit(address(paymentToken), PRICE, FINANCE_MESSAGE);
             emit Buy(msg.sender, PRICE);
             uint256 lastTokenid = NFbioToken.totalSupply();
             require(bioToken.mint(msg.sender, UNIT), MINT_ERROR);
